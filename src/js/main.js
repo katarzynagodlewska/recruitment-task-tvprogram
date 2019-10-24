@@ -5,6 +5,7 @@ const resultsList = document.querySelector('.results');
 const input = document.querySelector('.input-search');
 
 searchButton.addEventListener('click', event => {
+  event.preventDefault();
   var request = new XMLHttpRequest();
 
   let yourUrl='http://api.tvmaze.com/search/shows?q=girls';
