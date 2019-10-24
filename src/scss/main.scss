@@ -1,0 +1,28 @@
+@import "_normalize";
+@import "_variables";
+
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  color: $yellow;
+  background: $violet;
+}
+
+
+.result-element {
+  border-top:1px solid #ddd;
+  margin-top:1rem;
+  padding-top:2rem;
+  padding-bottom: 2rem;
+}
+.result-element__text {
+  color:#777;
+  font-size:0.8rem;
+}
