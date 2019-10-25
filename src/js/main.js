@@ -24,7 +24,9 @@ for (var i = 0; i < response.length; i++)
     results.push({
         'url':resp['show']['url'],
         'name':resp['show']['name'],
-        'ratingAverage':resp['show']['rating']['average']
+        'ratingAverage':resp['show']['rating']['average'],
+        'imageMedium':resp['show']['image']['medium'],
+        'imageOriginal':resp['show']['image']['original']
     });
 }
 for (let i = 0; i<results.length; i++) {
@@ -35,8 +37,19 @@ for (let i = 0; i<results.length; i++) {
   resultElementText.classList.add('result-element__text');
   resultElementText.innerText = results[i]['name'];
 
+  const resultElementRating = document.createElement('div');
+  resultElementRating.classList.add('result-element__rating');
+  resultElementRating.innerText = results[i]['ratingAverage'];
+
+  const resultElementImageMedium = document.createElement('img');
+  resultElementImageMedium.classList.add('result-element__image-medium');
+  resultElementImageMedium.innerHTML += results[i]['imageMedium'];
+  
+  resultElementDiv.appendChild(resultElementImageMedium);
+  resultElementDiv.appendChild(resultElementRating);
   resultElementDiv.appendChild(resultElementText);
   resultsList.append(resultElementDiv);
+
 }
 };
 
