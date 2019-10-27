@@ -8,11 +8,6 @@ const defaultEmptyImg = './assets/img/image_not_found.png';
 const apiKey = 'a06e429';
 let pageNumber = 1;
 
-// onScrollViewToBottom.addEventListener('click', event => {
-//   pageNumber++;
-
-//   let yourUrl="http://www.omdbapi.com/?apikey=a06e429&s=girl&page=${pageNumber}" ; 
-// })
 
 searchButton.addEventListener('click', event => {
   event.preventDefault();
@@ -34,62 +29,70 @@ for (var i = 0; i < response.length; i++) {
 
   let imdbID = response[i]['imdbID'];
 
-  let urlToSearchMovieByTitleId = `http://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}`;
-  requestForMoreDetailsAboutMovie.open('GET', urlToSearchMovieByTitleId,true);
-
-  requestForMoreDetailsAboutMovie.responseType = 'json';
-  requestForMoreDetailsAboutMovie.send();
-
-  requestForMoreDetailsAboutMovie.onload = function() {
-    console.log(imdbID);
-  
-    var resp = requestForMoreDetailsAboutMovie.response;
-    results.push({
+    getAsync(`http://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}`)
+    .then((resp)=>{
+    return {
         'name':resp['Title'],
         'rating':resp['Ratings'][0]['Value'],
         'posterUrl':resp['Poster'],
         'releaseDate':resp['Released']
-    });
-  }
+    }
+  })
+    .then((result)=> {
+      const resultElementDiv = document.createElement('div');
+      resultElementDiv.classList.add('result-element');
+      
+      const resultElementText = document.createElement('div');
+      resultElementText.classList.add('result-element__text');
+      resultElementText.innerText = result['name'];
+    
+      const resultElementRating = document.createElement('div');
+      resultElementRating.classList.add('result-element__rating');
+      resultElementRating.innerText = result['rating'];
+    
+      if (result['posterUrl'] == null) {
+        const resultElementImageMedium = document.createElement('img');
+        resultElementImageMedium.classList.add('result-element__image-medium');
+        resultElementImageMedium.src = defaultEmptyImg;
+        resultElementDiv.appendChild(resultElementImageMedium);
+      }
+      else {
+      const resultElementImageMedium = document.createElement('img');
+      resultElementImageMedium.classList.add('result-element__image-medium');
+      resultElementImageMedium.src = result['posterUrl'];
+      resultElementDiv.appendChild(resultElementImageMedium);
+      }
+    
+      const resultElementRelaseDate = document.createElement('div');
+      resultElementRelaseDate.classList.add('result-element__ralase-date');
+      resultElementRelaseDate.innerText = result['releaseDate'];
+    
+    
+      resultElementDiv.appendChild(resultElementRelaseDate);
+      resultElementDiv.appendChild(resultElementRating);
+      resultElementDiv.appendChild(resultElementText);
+      resultsList.append(resultElementDiv);
+    
+    })
 }
-for (let i = 0; i<results.length; i++) {
-  const resultElementDiv = document.createElement('div');
-  resultElementDiv.classList.add('result-element');
-  
-  const resultElementText = document.createElement('div');
-  resultElementText.classList.add('result-element__text');
-  resultElementText.innerText = results[i]['name'];
 
-  const resultElementRating = document.createElement('div');
-  resultElementRating.classList.add('result-element__rating');
-  resultElementRating.innerText = results[i]['rating'];
-
-  if (results[i]['posterUrl'] == null) {
-    const resultElementImageMedium = document.createElement('img');
-    resultElementImageMedium.classList.add('result-element__image-medium');
-    resultElementImageMedium.src = defaultEmptyImg;
-    resultElementDiv.appendChild(resultElementImageMedium);
-  }
-  else {
-  const resultElementImageMedium = document.createElement('img');
-  resultElementImageMedium.classList.add('result-element__image-medium');
-  resultElementImageMedium.src = results[i]['posterUrl'];
-  resultElementDiv.appendChild(resultElementImageMedium);
-  }
-
-  const resultElementRelaseDate = document.createElement('div');
-  resultElementRelaseDate.classList.add('result-element__ralase-date');
-  resultElementRelaseDate.innerText = results[i]['releaseDate'];
-
-
-  resultElementDiv.appendChild(resultElementRelaseDate);
-  resultElementDiv.appendChild(resultElementRating);
-  resultElementDiv.appendChild(resultElementText);
-  resultsList.append(resultElementDiv);
-
-}
 };
+},);
 
 
-
-});
+function getAsync(url) { 
+  return new Promise((resolve, reject) => { 
+      var httpReq = new XMLHttpRequest(); 
+      httpReq.onreadystatechange = () => { 
+          if (httpReq.readyState === 4) { 
+              if (httpReq.status === 200) { 
+                  resolve(JSON.parse(httpReq.responseText)); 
+              } else { 
+                 reject(new Error(httpReq.statusText)); 
+              } 
+          } 
+      }
+      httpReq.open("GET", url, true); 
+      httpReq.send(); 
+  }); 
+}
