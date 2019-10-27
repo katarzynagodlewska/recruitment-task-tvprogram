@@ -5,44 +5,52 @@ const searchButton = document.querySelector('.button-search');
 const resultsList = document.querySelector('.results');
 const input = document.querySelector('.input-search');
 const defaultEmptyImg = './assets/img/image_not_found.png';
-const apiKey = a06e429;
+const apiKey = 'a06e429';
 let pageNumber = 1;
-//'../assets/img/water-glass.svg'
 
-onScrollViewToBottom.addEventListener('click', event => {
-  pageNumber++;
+// onScrollViewToBottom.addEventListener('click', event => {
+//   pageNumber++;
 
-  let yourUrl="http://www.omdbapi.com/?apikey=a06e429&s=girl&page=${pageNumber}" ; 
-})
+//   let yourUrl="http://www.omdbapi.com/?apikey=a06e429&s=girl&page=${pageNumber}" ; 
+// })
 
 searchButton.addEventListener('click', event => {
   event.preventDefault();
   pageNumber = 1;
-  var request = new XMLHttpRequest();
+  var requestForBasicDetailsAboutMovies = new XMLHttpRequest();
 
-  let urlToSearchMovieByString = "http://www.omdbapi.com/?apikey=${apiKey}&s=girl&page=${pageNumber}";
-  request.open('GET', urlToSearchMovieByString, true);
+  let urlToSearchMovieByString = `http://www.omdbapi.com/?apikey=${apiKey}&s=girl&page=${pageNumber}`;
+  requestForBasicDetailsAboutMovies.open('GET', urlToSearchMovieByString, true);
 
-  let urlToSearchMovieByTitleId = 'http://www.omdbapi.com/?apikey=${apiKey}&i=tt0467200';
-  request.open('GET', yourUrl,true);
-
-  request.responseType = 'json';
-request.send();
+  requestForBasicDetailsAboutMovies.responseType = 'json';
+  requestForBasicDetailsAboutMovies.send();
 
 var results = [];
-request.onload = function() {
-let response=request.response;
+requestForBasicDetailsAboutMovies.onload = function() {
+let response=requestForBasicDetailsAboutMovies.response['Search'];
 
-for (var i = 0; i < response.length; i++)
-{
+for (var i = 0; i < response.length; i++) {
+  var requestForMoreDetailsAboutMovie = new XMLHttpRequest();
 
-    var resp = response[i];
+  let imdbID = response[i]['imdbID'];
+
+  let urlToSearchMovieByTitleId = `http://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}`;
+  requestForMoreDetailsAboutMovie.open('GET', urlToSearchMovieByTitleId,true);
+
+  requestForMoreDetailsAboutMovie.responseType = 'json';
+  requestForMoreDetailsAboutMovie.send();
+
+  requestForMoreDetailsAboutMovie.onload = function() {
+    console.log(imdbID);
+  
+    var resp = requestForMoreDetailsAboutMovie.response;
     results.push({
-        'name':resp['title'],
-        'rating':resp['rating'][0]['value'],
-        'posterUrl':resp['poster'],
-        'releaseDate':resp['released']
+        'name':resp['Title'],
+        'rating':resp['Ratings'][0]['Value'],
+        'posterUrl':resp['Poster'],
+        'releaseDate':resp['Released']
     });
+  }
 }
 for (let i = 0; i<results.length; i++) {
   const resultElementDiv = document.createElement('div');
