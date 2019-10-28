@@ -3,7 +3,6 @@
 
 const searchButton = document.querySelector('.button-search');
 const resultsList = document.querySelector('.results'); 
-const input = document.querySelector('.input-search');
 const defaultEmptyImg = './assets/img/image_not_found.png';
 const awardsIcon = './assets/img/icons8-the-oscars-64.png';
 const apiKey = 'a06e429';
@@ -13,10 +12,12 @@ let pageNumber = 1;
 
 searchButton.addEventListener('click', event => {
   event.preventDefault();
+  const input = document.querySelector('.input-search');
   pageNumber = 1;
+  // czyszczenie diva
   var requestForBasicDetailsAboutMovies = new XMLHttpRequest();
 
-  let urlToSearchMovieByString = `http://www.omdbapi.com/?apikey=${apiKey}&s=Last-Minute&page=${pageNumber}`;
+  let urlToSearchMovieByString = `http://www.omdbapi.com/?apikey=${apiKey}&s=${input['value']}&page=${pageNumber}`;
   requestForBasicDetailsAboutMovies.open('GET', urlToSearchMovieByString, true);
 
   requestForBasicDetailsAboutMovies.responseType = 'json';
@@ -24,11 +25,13 @@ searchButton.addEventListener('click', event => {
 
 requestForBasicDetailsAboutMovies.onload = function() {
 let response=requestForBasicDetailsAboutMovies.response['Search'];
-if(response.length==0){
+if(typeof response === 'undefined' || response.length==0){
   const resultElementDiv = document.createElement('div');
   resultElementDiv.classList.add('result-element');
   resultElementDiv.innerText="There no elemnts";
+  resultsList.append(resultElementDiv);
 }
+else{
 for (var i = 0; i < response.length; i++) {
 
   let imdbID = response[i]['imdbID'];
@@ -77,7 +80,7 @@ for (var i = 0; i < response.length; i++) {
       resultsList.append(resultElementDiv);
     
     })
-  }};
+  }}};
 });
 
 function createResultElement(tagName, elementClass, apiValue, descriptionForEmptyValue){
